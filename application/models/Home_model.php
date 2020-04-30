@@ -1152,9 +1152,11 @@ class Home_model extends CI_Model
 				array_push($payments, ['sy' => $this->sy, 'sem' => $this->sem, 'value' => $dp_val]);
 				$bills = $this->set_bills($ssi_id, $course);
 			}
-			if($value['type'] == "old_system"){
-				// unset($payments[$key]);
-				$old_system_payments[] = $value;
+			if(isset($value['type'])){
+				if($value['type'] == "old_system"){
+					// unset($payments[$key]);
+					$old_system_payments[] = $value;
+				}
 			}
 		}
 
