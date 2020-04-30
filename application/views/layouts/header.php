@@ -149,7 +149,7 @@
 										<li><a href="javascript:;">Calendar</a></li>
 										<li><a href="javascript:;">Setting</a></li>
 										<li class="divider"></li> -->
-										<li><a href="/cashier2/auth/logout">Log Out</a></li>
+										<li><a href="/cashier/auth/logout">Log Out</a></li>
 									</ul>
 								</li>
 							</ul>
