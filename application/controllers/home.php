@@ -184,6 +184,13 @@ class Home extends CI_Controller
 		echo json_encode($sop);
 	}
 
+	public function print_or(){
+		$home_model = $this->load->model('Home_model');
+		$grpd = $this->Home_model->get_regular_payment_details($this->input->post('or'));
+		// echo $this->input->post('or');
+		echo json_encode($grpd);
+	}
+
 }
 
 ?>

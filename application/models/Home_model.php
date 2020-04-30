@@ -1543,6 +1543,26 @@ class Home_model extends CI_Model
 		return $data->result();
 	}
 
+	public function get_regular_payment_details($orNo){
+
+		$select = [
+
+					'assessment.particular AS particular',
+					'paymentdetails.amt1 AS amount',
+					'paymentdetails.amt2 AS amount_oracle',
+					'assessment.feeType AS feeType'
+				];
+
+		$data = $this->db
+					->select($select)
+					->join('paymentdetails', 'payments.paymentId = paymentdetails.paymentId')
+					->join('assessment', 'paymentdetails.assessmentId = assessment.assessmentId')
+					->where('payments.orNo', $orNo)
+					->get('payments');
+
+		return $data->result();
+	}
+
 	public function test($acct_no = "05-2-01635", $sy = '2019-2020', $sem ='1st'){
 		// $a = $this->old_system_tutorial($acct_no, $sy, $sem);
 		// $a = $this->old_system_tutorial($acct_no, $sy, $sem);

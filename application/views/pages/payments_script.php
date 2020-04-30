@@ -877,6 +877,17 @@
 					}
 				});
 		    },
+			get_receipt_for_print: function(event){
+				event.preventDefault();
+				var e = event.currentTarget;
+				var or = e.getAttribute('data-key')
+				console.log(or)
+				$.post('<?= base_url("home/print_or") ?>', {or: or}, function(data, textStatus, xhr) {
+					// console.log(data);
+					$this.print_receipt(JSON.parse(data));
+				});
+
+			},
 		    print_receipt: function(data){
 		    	var particulars = []; // FOR ADJUSTED
 		    	var particulars_2 = []; // FOR ORACLE
