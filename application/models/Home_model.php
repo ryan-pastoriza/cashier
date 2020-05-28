@@ -771,7 +771,7 @@ class Home_model extends CI_Model
 		$total_discount = 0;
 		$discount = $this->db
 						->where('discount.ssi_id', $ssi_id)
-						->select('SUM(amt2) as total_discount, sy.sy, sem.sem')
+						->select('SUM(amt1) as total_discount, SUM(amt2) as total_discount2, sy.sy, sem.sem')
 						->join('sy', 'sy.syId = discount.syId')
 						->join('sem', 'sem.semId = discount.semId')
 						->group_by(['sy', 'sem'])
@@ -808,6 +808,7 @@ class Home_model extends CI_Model
 			foreach ($discount as $d_key => $d_value) {
 				if($value->sy == $d_value->sy && $value->sem == $d_value->sem){
 					$value->discount = $d_value->total_discount;
+					$value->discount2 = $d_value->total_discount2;
 				}
 			}
 			$a[$value->sy . " " . $value->sem][] = $value;
@@ -819,6 +820,7 @@ class Home_model extends CI_Model
 			$assessment1 = 0.00;
 			$assessment2 = 0.00;
 			$discount = '';
+			$discount2 = '';
 			$paid1 = 0.00;
 			$paid2 = 0.00;
 			foreach ($value as $key1 => $value1) {
@@ -827,6 +829,7 @@ class Home_model extends CI_Model
 				$assessment1 += floatval($value1->price1); 
 				$assessment2 += floatval($value1->price2); 
 				$discount     = floatval($value1->discount);
+				$discount2     = floatval($value1->discount2);
 				$paid1 		 += floatval($value1->paid1);
 				$paid2 		 += floatval($value1->paid2);
 			}
@@ -837,12 +840,13 @@ class Home_model extends CI_Model
 				'total_1' => $assessment1,
 				'total_2' => $assessment2,
 				'total_1_discounted' => $assessment1 - $discount,
-				'total_2_discounted' => $assessment2 - $discount,
+				'total_2_discounted' => $assessment2 - $discount2,
 				'discount' => $discount,
+				'discount2' => $discount2,
 				'paid1' => $paid1,
 				'paid2' => $paid2,
-				'remaining_balance_2' => ($assessment2 - $discount) - $paid2,
-				'remaining_balance_1' => ($assessment1 - $discount) - $paid1
+				'remaining_balance_1' => ($assessment1 - $discount) - $paid1,
+				'remaining_balance_2' => ($assessment2 - $discount2) - $paid2
 			];
 		}
 		return $array;

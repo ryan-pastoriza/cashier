@@ -28,10 +28,11 @@
 							</tr>
 							<tr v-for="fs in fee_summary['regular_fees']" v-bind:class='regular_hide' class="fee_summary_row" v-bind:data-sy="fs.sy" v-bind:data-sem="fs.sem" v-on:click="view_summary_details($event)" data-toggle="modal" data-target="#summary_details_modal" @contextmenu="add_to_payments($event)" data-type="regular" v-bind:data-balance="ses_role == 'cashier' ? fs.remaining_balance_2 : fs.remaining_balance_1">
 								<td> {{ fs.sy }} </td>
+
 								<td> {{ fs.sem }} </td>
 								<td> REGULAR</td>
 
-								<td v-if="ses_role == 'cashier'"> {{ formatPrice(fs.total_2_discounted) }} <small v-if="fs.discount">(-{{fs.discount}})</small></td>
+								<td v-if="ses_role == 'cashier'"> {{ formatPrice(fs.total_2_discounted) }} <small v-if="fs.discount">(-{{fs.discount2}})</small></td>
 								<td v-else>{{ formatPrice(fs.total_1_discounted) }}<small v-if="fs.discount">(-{{fs.discount}})</small></td>
 
 								<td v-if="ses_role == 'cashier'"> {{ formatPrice(fs.paid2) }} </td>
