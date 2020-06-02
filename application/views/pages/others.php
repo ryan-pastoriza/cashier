@@ -183,7 +183,7 @@
 						<div class="col-md-6 col-sm-6">
 							<select name="particular_type" id="particular_type" class="form-control" v-model="add_particular_form.particular_type">
 								<option value="special">Special</option>
-								<option value="other">Other</option>
+								<option value="other" disabled>Other</option>
 							</select>
 		                </div>
 					</div>

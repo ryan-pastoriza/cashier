@@ -492,7 +492,7 @@
 		    		}
 		    		else{	
 		    			var $this = this;
-		    			$.post('<?= base_url("others/add_particular") ?>', {particular: this.add_particular_form.particular, price: this.add_particular_form.price, particular_type: this.add_particular_form.particular_type}, function(json, textStatus, xhr) {
+		    			$.post('<?= base_url("others/add_particular") ?>', {particular: this.add_particular_form.particular, price: this.add_particular_form.price, particular_type: this.add_particular_form.particular_type, sStatus: this.enrollment_status,cType: this.course_type}, function(json, textStatus, xhr) {
 		    				if(json == "error"){
 				    			swal("Oops!", "Something went wrong. Please contact support.", "error")
 		    				}

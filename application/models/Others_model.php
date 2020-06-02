@@ -116,10 +116,15 @@ class Others_model extends CI_Model
 			
 			$fee_rows = [
 				'particularName' => $data->particular,
+				'amt1' => $data->price,
 				'amt2' => $data->price,
 				'billType' => $data->particular_type,
+				// 'course_type' => $data->cType,
+				// 'studentStatus' => $data->sStatus,
+				'feeType' => 'others',
 				'syId' => $this->syId,
-				'semId' => $this->semId
+				'semId' => $this->semId,
+				'collectionReportGroup' => 'others'
 			];
 			$this->db->insert('particulars', $fee_rows);
 			return true;
