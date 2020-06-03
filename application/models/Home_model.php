@@ -215,6 +215,9 @@ class Home_model extends CI_Model
 				$tutorial = $this->old_system_tutorial($acct_no, $value->sy, $value->sem);
 				$payment_new_system = $this->old_system_payments($acct_no, $value->sy, $value->sem); // payments in new system
 				$bridging = $this->old_system_bridging($acct_no, $value->sy, $value->sem);
+				// echo"TESTStart";
+				// var_dump( $bridging['new_balance'] );
+				// echo"TESTEnd<br>";
 				$bridging_amt = 0;
 				if($bridging){
 					if($bridging['old_balance']->total_bridging){
@@ -222,7 +225,7 @@ class Home_model extends CI_Model
 					}
 				}
 				$tuition_misc_assessment = $remaining_old_assessment - (int)$payment_new_system['total_misc_paid']; // OLD SYSTEM MISC + TUITION - PAYMENTS IN NEW SYSTEM
-				$grand_assessment = round($remaining_old_assessment + $tutorial['old_balance'] + $bridging_amt, 2); // remaining old assessment + tutorial + bridging || to be shown in the UI in column assessment
+				$grand_assessment = round($remaining_old_assessment + ($tutorial==0?$tutorial:$tutorial['old_balance']) + $bridging_amt, 2); // remaining old assessment + tutorial + bridging || to be shown in the UI in column assessment
 				$grand_remaining_balance = round((int)$grand_assessment - (int)$payment_new_system['total'], 2);
 				if($grand_assessment > 0){
 					$ret[$value->sy . " - " . $value->sem] = [
@@ -233,10 +236,10 @@ class Home_model extends CI_Model
 						'old_system_paid' => $old_system_paid,
 						'tuition_misc_assessment' => $tuition_misc_assessment,
 						'assessment_remaining' => $remaining_old_assessment,
-						'tutorial' => $tutorial['old_balance'],
-						'tutorial_new_system' => $tutorial['new_balance'],
+						'tutorial' => $tutorial==0?$tutorial:$tutorial['old_balance'],
+						'tutorial_new_system' => $tutorial==0?$tutorial:$tutorial['new_balance'],
 						'bridging' => $bridging_amt, // old system
-						'bridging_new_system' => $bridging_amt['new_balance'], // new system amount (old assessment - total paid in old system - total paid in new system)
+						'bridging_new_system' => $bridging['new_balance']->total_bridging, // new system amount (old assessment - total paid in old system - total paid in new system)
 						'grand_assessment' => $grand_assessment,
 						'new_system_paid' => $payment_new_system['total'],
 						'grand_remaining' => $grand_remaining_balance
@@ -403,7 +406,6 @@ class Home_model extends CI_Model
 										->group_by(['oldParticular', 'sy.sy', 'sem.sem'])
 										->get('paymentdetails')
 										->row();
-
 				$new_balance = $bridging_new_system ? $bridging_new_system->total_paid : $bridging;
 				return [
 					'old_balance' => $bridging,
@@ -805,6 +807,7 @@ class Home_model extends CI_Model
 		$a = [];
 		foreach ($result as $key => $value) {
 			$value->discount = 0;
+			$value->discount2 = 0;
 			foreach ($discount as $d_key => $d_value) {
 				if($value->sy == $d_value->sy && $value->sem == $d_value->sem){
 					$value->discount = $d_value->total_discount;
