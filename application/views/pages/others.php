@@ -14,6 +14,12 @@
 					<h5>Personal Information</h5>
 					<hr>
 		            <div class="form-group">
+		                <label class="control-label col-md-3 col-sm-3" for="last">Last Name <span style="color:red">*</span> :</label>
+		                <div class="col-md-6 col-sm-6">
+		                    <input class="form-control reg_op_field" type="text" id="add_lname" name="last" placeholder="Last Name"  required v-model="other_payees_form.lname"/>
+		                </div>
+		            </div>
+		            <div class="form-group">
 		                <label class="control-label col-md-3 col-sm-3" for="first">First Name <span style="color:red">*</span> :</label>
 		                <div class="col-md-6 col-sm-6">
 		                    <input class="form-control reg_op_field" type="text" id="add_fname" name="first" placeholder="First Name" required v-model="other_payees_form.fname"/>
@@ -23,12 +29,6 @@
 		                <label class="control-label col-md-3 col-sm-3" for="middle">Middle Name:</label>
 		                <div class="col-md-6 col-sm-6">
 		                    <input class="form-control reg_op_field" type="text" id="add_mname" name="middle" placeholder="Middle Name" v-model="other_payees_form.mname"/>
-		                </div>
-		            </div>
-		            <div class="form-group">
-		                <label class="control-label col-md-3 col-sm-3" for="last">Last Name <span style="color:red">*</span> :</label>
-		                <div class="col-md-6 col-sm-6">
-		                    <input class="form-control reg_op_field" type="text" id="add_lname" name="last" placeholder="Last Name"  required v-model="other_payees_form.lname"/>
 		                </div>
 		            </div>
 		            <div class="form-group">
