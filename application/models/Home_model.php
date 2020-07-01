@@ -239,7 +239,7 @@ class Home_model extends CI_Model
 						'tutorial' => $tutorial==0?$tutorial:$tutorial['old_balance'],
 						'tutorial_new_system' => $tutorial==0?$tutorial:$tutorial['new_balance'],
 						'bridging' => $bridging_amt, // old system
-						'bridging_new_system' => $bridging['new_balance']->total_bridging, // new system amount (old assessment - total paid in old system - total paid in new system)
+						'bridging_new_system' => $bridging['new_balance'] ? $bridging['new_balance']->total_bridging : 0, // new system amount (old assessment - total paid in old system - total paid in new system)
 						'grand_assessment' => $grand_assessment,
 						'new_system_paid' => $payment_new_system['total'],
 						'grand_remaining' => $grand_remaining_balance
