@@ -17,6 +17,7 @@ class Reports_model extends CI_Model
 						->where('payments.acctno IS NULL', NULL)
 						->where('MONTH(payments.paymentDate)', $month_year[1])
 						->where('YEAR(payments.paymentDate)', $month_year[0])
+						->where('payments.printingType', 'OR')
 						->get('payments')->result();
 		$array = [];
 		$this->old_system_report($month_year);
