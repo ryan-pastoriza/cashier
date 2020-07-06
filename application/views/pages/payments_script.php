@@ -487,7 +487,7 @@
 		    		swal("Ooops!", "Particular Name is required.", "error")
 		    	}
 		    	else{
-		    		if(this.add_particular_form.price == 0){
+		    		if(this.add_particular_form.price < 0){
 			    		swal("Ooops!", "We don't give things for free. Don't we?", "error")
 		    		}
 		    		else{	
