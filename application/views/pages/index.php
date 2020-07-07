@@ -98,14 +98,14 @@
 						<h5 class="text-white"><span class="fa fa-calculator"></span> Payment</h5>
 						<br>
 						<div class="mb5">
-							<input type="text" class="form-control input-sm" placeholder="OR NUMBER" v-model="or_served">
-						</div>
-						<div class="mb5">
 							<select class="form-control input-sm" v-model="receipt" v-on:change="current_or_served()">
 								<option value="OR">Official Receipt</option>
 								<option value="AR">Acknowledgement Receipt</option>
 								<!-- <option value="TR">Temporary Receipt</option> -->
 							</select>
+						</div>
+						<div class="mb5">
+							<input type="text" class="form-control input-sm" placeholder="OR NUMBER" v-model="or_served">
 						</div>
 						<div class="mb5">
 							<input type="date" class="form-control input-sm" v-model="payment_date">
