@@ -1334,7 +1334,24 @@ class Home_model extends CI_Model
 		// update OR
 		$this->receipt_served($or, $receipt);
 
-		return $paid_particulars;
+		// return $paid_particulars;
+		//Use Reprint Code cause some particulars cant be found in reciept
+		$selectss = [
+
+					'assessment.particular AS particular',
+					'paymentdetails.amt2 AS amount',
+					'paymentdetails.amt1 AS amount_oracle',
+					'assessment.feeType AS feeType'
+				];
+
+		$datass = $this->db
+					->select($selectss)
+					->join('paymentdetails', 'payments.paymentId = paymentdetails.paymentId')
+					->join('assessment', 'paymentdetails.assessmentId = assessment.assessmentId')
+					->where('payments.orNo', $or)
+					->get('payments');
+
+		return $datass->result();
 	}
 
 	public function set_bills($ssi_id, $course){
