@@ -881,7 +881,7 @@
 				event.preventDefault();
 				var e = event.currentTarget;
 				var or = e.getAttribute('data-key')
-				console.log(or)
+				// console.log(or)
 				$.post('<?= base_url("home/print_or") ?>', {or: or}, function(data, textStatus, xhr) {
 					// console.log(data);
 					$this.print_receipt(JSON.parse(data));
@@ -971,9 +971,9 @@
 		    			ar.date = this.payment_date;
 		    			ar.rows = particulars;
 		    	}
-		    	location.reload();
 		    	$('.modal').modal('hide');
 		    	$("#selected_student").val('');
+		    	location.reload();
 		    },
 		    downpayment_bills: function(course, studentStatus){ // check if there are bills for downpayment
 		    	$this = this;

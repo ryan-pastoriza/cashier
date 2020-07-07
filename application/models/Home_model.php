@@ -529,8 +529,8 @@ class Home_model extends CI_Model
 				array_push($paid_particulars, $ospt);
 			}
 		}
-
 		return $paid_particulars;
+
 	}
 
 	public function old_system_pay_tutorial($acct_no, $data, $payment_id){
@@ -1220,10 +1220,10 @@ class Home_model extends CI_Model
 						assessment.amt2 as price2,
 						assessment.syId,
 						assessment.semId,
-						IFNULL(pd.amt1,0) as paid1,
-						IFNULL(pd.amt2,0)as paid2,
-						CAST(assessment.amt1 AS DECIMAL(9, 2)) - CAST(IFNULL(pd.amt1,0) AS DECIMAL(9, 2)) as remaining_balance1,
-						CAST(assessment.amt2 AS DECIMAL(9, 2)) - CAST(IFNULL(pd.amt2,0) AS DECIMAL(9, 2)) as remaining_balance2';
+						SUM(IFNULL(pd.amt1, 0)) as paid1,
+						SUM(IFNULL(pd.amt2, 0)) as paid2,
+						CAST(assessment.amt1 AS DECIMAL(9, 2)) - CAST(IFNULL(SUM(pd.amt1),0) AS DECIMAL(9, 2)) as remaining_balance1,
+						CAST(assessment.amt2 AS DECIMAL(9, 2)) - CAST(IFNULL(SUM(pd.amt2),0) AS DECIMAL(9, 2)) as remaining_balance2';
 
 			$result = $this->db
 						->select($select)
@@ -1234,6 +1234,7 @@ class Home_model extends CI_Model
 						->join('sy', 'sy.syId = assessment.syId')
 						->join('sem', 'sem.semId = assessment.semId')
 						->join('paymentdetails pd', 'pd.assessmentId = assessment.assessmentId', 'LEFT')
+						->group_by('assessment.assessmentId')
 						->order_by('assessment.feeType')
 						->get('assessment')->result();
 
@@ -1551,12 +1552,11 @@ class Home_model extends CI_Model
 	}
 
 	public function get_regular_payment_details($orNo){
-
 		$select = [
 
 					'assessment.particular AS particular',
-					'paymentdetails.amt1 AS amount',
-					'paymentdetails.amt2 AS amount_oracle',
+					'paymentdetails.amt2 AS amount',
+					'paymentdetails.amt1 AS amount_oracle',
 					'assessment.feeType AS feeType'
 				];
 
