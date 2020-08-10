@@ -1379,7 +1379,7 @@ class Home_model extends CI_Model
 				->where('semId', $this->semId)
 				->where('feeType', 'Miscellaneous')
 				->where('courseType', $course_type)
-				->where('studentStatus', $year->current_stat)
+				->where('studentStatus', $year->current_stat=='New' ? 'New':'Old')
 				->get('particulars')->result();
 
 			if($particulars){
@@ -1475,7 +1475,8 @@ class Home_model extends CI_Model
 						->where('semId', $this->semId)
 						->where('feeType', 'Miscellaneous')
 						->where('courseType', $course_type)
-						->where('studentStatus', $year->current_stat)
+						->where('studentStatus', $year->current_stat == 'New' ? 'New':'Old')
+						// ->where('studentStatus', $year->current_stat)
 						->get('particulars')->result();
 
 				if($particulars){
