@@ -58,7 +58,7 @@ class Home_model extends CI_Model
 		$query  = $sis_db
 					->select(['s_main_address.use_present_address', 'address.street', 'brgy.brgy_name', 'city.city_name'])
 					->where('spi_id', $spi_id)
-					->where('use_present_address', 'yes')
+					// ->where('use_present_address', 'yes')
 					->where('address_type', 'permanentAddress')
 					->join('address', 'address.add_id = s_main_address.add_id')
 					->join('brgy', 'address.brgy_id = brgy.brgy_id', 'left')
@@ -239,7 +239,7 @@ class Home_model extends CI_Model
 						'tutorial' => $tutorial==0?$tutorial:$tutorial['old_balance'],
 						'tutorial_new_system' => $tutorial==0?$tutorial:$tutorial['new_balance'],
 						'bridging' => $bridging_amt, // old system
-						'bridging_new_system' => $bridging['new_balance'] ? $bridging['new_balance']->total_bridging : 0, // new system amount (old assessment - total paid in old system - total paid in new system)
+						'bridging_new_system' => $bridging && $bridging['new_balance'] ? $bridging['new_balance']->total_bridging : 0, // new system amount (old assessment - total paid in old system - total paid in new system)
 						'grand_assessment' => $grand_assessment,
 						'new_system_paid' => $payment_new_system['total'],
 						'grand_remaining' => $grand_remaining_balance
@@ -1379,7 +1379,7 @@ class Home_model extends CI_Model
 				->where('semId', $this->semId)
 				->where('feeType', 'Miscellaneous')
 				->where('courseType', $course_type)
-				->where('studentStatus', $year->current_stat=='New' ? 'New':'Old')
+				->where('studentStatus', ($year->current_stat=='New' ? 'New':'Old'))
 				->get('particulars')->result();
 
 			if($particulars){
@@ -1475,7 +1475,7 @@ class Home_model extends CI_Model
 						->where('semId', $this->semId)
 						->where('feeType', 'Miscellaneous')
 						->where('courseType', $course_type)
-						->where('studentStatus', $year->current_stat == 'New' ? 'New':'Old')
+						->where('studentStatus', ($year->current_stat == 'New' ? 'New':'Old'))
 						// ->where('studentStatus', $year->current_stat)
 						->get('particulars')->result();
 
