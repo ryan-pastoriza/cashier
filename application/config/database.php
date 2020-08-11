@@ -75,9 +75,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => '192.168.1.115',
-	'username' => 'dale',
-	'password' => '1234',
+	'hostname' => '192.168.1.245',
+	'username' => 'engtech',
+	'password' => 'engtech',
 	'database' => 'acs',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
@@ -97,9 +97,9 @@ $db['default'] = array(
 
 $db['db_ama'] = array(
 	'dsn'	=> '',
-	'hostname' => '192.168.1.115',
-	'username' => 'dale',
-	'password' => '1234',
+	'hostname' => '192.168.1.124',
+	'username' => 'engtech',
+	'password' => 'engtech',
 	'database' => 'databaseama',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
@@ -119,7 +119,7 @@ $db['db_ama'] = array(
 
 $db['sis_db'] = array(
 	'dsn'	=> '',
-	'hostname' => '192.168.1.175',
+	'hostname' => '192.168.1.245',
 	'username' => 'engtech',
 	'password' => 'engtech',
 	'database' => 'sis_main_db',
