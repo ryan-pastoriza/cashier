@@ -316,6 +316,7 @@
 		</div>
 	</div>
 
+
 	<div id="or_details" class="modal" role="dialog" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -340,6 +341,9 @@
 			  	</div>
 			  	<div class="modal-footer">
 					<div class="btn-group">
+				    	<button v-if="current_or_status != 'Cancelled'" type="button" class="btn btn-success btn-sm dropdown-toggle" v-on:click="edit_detail_modal(current_or)" aria-haspopup="true" aria-expanded="false">Edit OR</button>
+				  	</div>
+					<div class="btn-group">
 				    	<button v-if="current_or_status != 'Cancelled'" type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Cancel OR</button>
 				    	<div class="dropdown-menu">
 							<ul class="list-unstyled text-center">
@@ -350,6 +354,73 @@
 					  	</div>
 				  	</div>
 			  	</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal" id="edit_payment_modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+		  		<div class="modal-header">
+			    	<button type="button" class="close" data-dismiss="modal" data-toggle="modal" data-target="#or_details">&times;</button>
+			    	<h4 class="modal-title"><small>OR</small> <b>#{{current_or}}</b> <small>Edit</small></h4>
+			  	</div>
+				<div class="modal-body">
+					<h2>OR Information</h2>
+					<div class="mb5">
+						<select class="form-control input-sm" id="edit_receipt" v-model="edit_receipt">
+							<option value="OR">Official Receipt</option>
+							<option value="AR">Acknowledgement Receipt</option>
+							<!-- <option value="TR">Temporary Receipt</option> -->
+						</select>
+					</div>
+					<div class="mb5">
+						<input type="text" class="form-control input-sm" placeholder="OR NUMBER" id="edit_or" v-model="edit_or">
+					</div>
+					<div class="mb5">
+						<input type="date" class="form-control input-sm" id="edit_date" v-model="edit_date">
+					</div>
+					<div class="form-group mb5">
+						<input type="text" class="form-control input-sm" id="edit_total" v-model.lazy="edit_total">
+					</div>
+					<div class="form-group mb5">
+						<button type="button" class="btn btn-lg btn-primary form-control" v-if="has_selected" style="min-height: 70px; font-size: 20px;" v-on:click="edit_payment()" v-if="ses_role != 'cashier'">EDIT OR DETAILS</button>
+					</div>
+					<hr>
+					<h2>Payment Details</h2>
+					<div class="form-group mb5">
+					  	<label for="edit_total_details">Total Amount</label>
+						<input type="text" class="form-control input-sm" disabled id="edit_total" v-model="edit_total">
+					</div>
+
+					<table class="table table-striped table-hover">
+						<thead>
+							<th>Particular</th>
+							<th>Paid Amount</th>
+						</thead>
+						<tbody>
+							<tr v-for="(aod, index) in all_or_details">
+								<td>{{ aod.particular }}</td>
+								<td v-if="ses_role == 'cashier'">{{ aod.paid2 }}</td>
+								<td v-else>{{ aod.paid1 }}</td>
+							</tr>
+						</tbody>
+					</table>
+<!-- 
+					<div v-for="(val, index) in all_edit_details" v-bind:key="val.paymentDetailsId">
+						<div class="form-group mb5">
+						  	<label for="edit_particular">Particular</label>
+							<input type="text" class="form-control input-sm" :id="edit_particular"  value="val.particular">
+						</div>
+						<div class="form-group mb5">
+						  	<label for="edit_amount">Amount</label>
+							<input type="text"  class="form-control input-sm" id="edit_amount" v-model="val.detail_paid_amount">
+						</div><br>
+					</div>
+					<div class="form-group mb5">
+						<button type="button" class="btn btn-lg btn-primary form-control" v-if="has_selected" style="min-height: 70px; font-size: 20px;" v-on:click="edit_payment_details()" v-if="ses_role != 'cashier'">EDIT PAYMENT DETAILS</button>
+					</div> -->
+				</div>
 			</div>
 		</div>
 	</div>

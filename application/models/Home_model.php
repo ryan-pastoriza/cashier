@@ -1588,6 +1588,34 @@ class Home_model extends CI_Model
 		return $data->result();
 	}
 
+	public function getInfoForEdit($or){
+		$select = [
+
+					'payments.paymentId AS paymentId',
+					'payments.printingType',
+					'payments.paymentDate',
+					'paymentdetails.paymentDetailsId AS paymentDetailsId',
+					'assessment.assessmentId AS assessmentId',
+					'assessment.particular AS particular',
+					'paymentdetails.amt2 AS detail_paid_amount',
+					'paymentdetails.amt1 AS detail_paid_amount_oracle',
+					'assessment.amt2 AS assessment_amount',
+					'assessment.amt1 AS assessment_amount_oracle',
+					'payments.amt1 as total_paid_oracle',
+					'payments.amt2 as total_paid',
+				];
+
+		$data = $this->db
+					->select($select)
+					->join('paymentdetails', 'payments.paymentId = paymentdetails.paymentId')
+					->join('assessment', 'paymentdetails.assessmentId = assessment.assessmentId')
+					->where('payments.orNo', $or)
+					->get('payments');
+
+		return $data->result();
+
+	}
+
 	public function test($acct_no = "05-2-01635", $sy = '2019-2020', $sem ='1st'){
 		// $a = $this->old_system_tutorial($acct_no, $sy, $sem);
 		// $a = $this->old_system_tutorial($acct_no, $sy, $sem);

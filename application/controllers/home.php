@@ -190,6 +190,14 @@ class Home extends CI_Controller
 		// echo $this->input->post('or');
 		echo json_encode($grpd);
 	}
+	public function getEditData(){
+		$this->load->model('Home_model');
+		$or = $this->input->get('or');
+		// echo $or;
+		// echo '<- Mao na OR';
+		echo json_encode($this->Home_model->getInfoForEdit($or));
+
+	}
 
 }
 
