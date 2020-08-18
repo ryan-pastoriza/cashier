@@ -1467,9 +1467,9 @@ class Home_model extends CI_Model
 					->get('year')
 					->row();
 
-		if($course_type){ //
+		if($year){ // if enrolled, check in database: sis_db , table: year
+			if($course_type){ // Check if course type has bills
 
-			if($year){ // if enrolled, check in database: sis_db , table: year
 				$particulars = $this->db
 						->where('syId', $this->syId)
 						->where('semId', $this->semId)
@@ -1487,12 +1487,12 @@ class Home_model extends CI_Model
 				}
 			}
 			else{
-				return "Payee not yet enrolled in " . $this->sy . " - " . $this->sem;
+				return "No bills for the payee's course type. Please contact assessment support.";
 			}
 
 		}
 		else{
-			return "No bills for the payee's course type. Please contact assessment support.";
+			return "Payee not yet enrolled in " . $this->sy . " - " . $this->sem;
 		}
 	}
 
