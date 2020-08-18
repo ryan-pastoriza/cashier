@@ -388,10 +388,6 @@
 					</div>
 					<hr>
 					<h2>Payment Details</h2>
-					<div class="form-group mb5">
-					  	<label for="edit_total_details">Total Amount</label>
-						<input type="text" class="form-control input-sm" disabled id="edit_total" v-model="edit_total">
-					</div>
 
 					<table class="table table-striped table-hover">
 						<thead>
@@ -406,6 +402,10 @@
 							</tr>
 						</tbody>
 					</table>
+					<div class="form-group mb5">
+					  	<label for="edit_total_details">Total Amount</label>
+						<input type="text" class="form-control input-sm" disabled id="edit_total" v-model="edit_total">
+					</div>
 <!-- 
 					<div v-for="(val, index) in all_edit_details" v-bind:key="val.paymentDetailsId">
 						<div class="form-group mb5">

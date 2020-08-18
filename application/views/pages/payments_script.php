@@ -406,39 +406,13 @@
 		    	// this.edit_total_details = or;
 		    	var pType,totalPaid,payDate,Data;
 		    	$.getJSON('<?= base_url("home/getEditData")?>',{or:this.current_or},function(data){
-		    		// or_details = json.parse(data)
-		    		console.log(data);
-		    		// console.log(data[0].total_paid);
-		    		// console.log(data[0].printingType);
-		    		console.log(data[0].particular);
-		    		console.log(data[1].particular);
-		    		// console.log(data[0].paymentDate);
 		    		this.edit_receipt = data[0].printingType;
 		    		this.edit_total = data[0].total_paid;
 		    		this.edit_total_details = data[0].total_paid;
 		    		this.edit_date = data[0].paymentDate;
 		    		this.all_edit_details = data;
-		    		// pType = data[0].printingType;
-		    		// totalPaid = data[0].total_paid;
-		    		// payDate = data[0].paymentDate;
-		    		// Data = data;
 
-		    	});
-	    		// this.edit_receipt = pType;
-	    		// this.edit_total = totalPaid;
-	    		// this.edit_total_details = totalPaid;
-	    		// this.edit_date = payDate;
-	    		// this.all_edit_details = Data;
-	    		console.log(pType);
-	    		console.log(totalPaid);
-	    		console.log(payDate);
-	    		console.log(Data);
-		    	// this.to_pay
-				// this.cash
-				// this.change
-		    	// this.current_or_id = this.summary_details_payments[or].paymentId;	
-		    	// this.all_or_details = this.summary_details_payments[or].details;
-		    	// this.current_or_status = this.summary_details_payments[or].payment_status;
+		    	}.bind(this));
 		    	$("#or_details").modal('toggle')
 		    	$('#edit_payment_modal').modal('toggle')
 		    },
@@ -452,44 +426,24 @@
 				})
 				.then((proceed) => {
 				  	if (proceed) {
-				    	var el = $(".payment_distribution");
-				    	$this.final_payments = [];
-				    	var dcr = parseFloat(this.distributed_cash_remaining);
-				    	if( dcr > 0 || dcr < 0 ){
-				    		dcr > 0 ? alert("Please expend remaining cash.") : alert("Insufficient funds."); 
-				    	}
-				    	else{
-				    		$.each(el, function(index, val) {
-				    			if($(val).val() > 0){
-						    		$this.final_payments.push({
-						    			'sy' : $(val).attr('data-sy'),
-						    			'sem': $(val).attr('data-sem'),
-						    			'value': $(val).val(),
-						    			'type': $(val).attr('data-type'),
-						    			'particular': $(val).attr('data-particular')
-						    		});
-				    			}
-					    	});
-
-					    	$.post('<?= base_url("home/submit_payment") ?>', 
-				    			{
-				    				payments: $this.final_payments, 
-				    				fee_type: $this.fee_type, 
-				    				to_pay: $this.to_pay, 
-				    				or: $this.or_served, 
-				    				receipt: $this.receipt, 
-				    				date: $this.payment_date, 
-				    				ssi_id: $this.ssi_id,
-				    				acct_no: $this.acct_no,
-				    				course_type: $this.course_type,
-				    				course: $this.course,
-				    				current_status: $this.current_status,
-				    			},
-				    			function(data, textStatus, xhr) {
-					    			this.print_receipt(JSON.parse(data))
-					    		}.bind(this)
-					    	);
-				    	}
+				    	$.post('<?= base_url("home/submit_payment") ?>', 
+			    			{
+			    				payments: $this.final_payments, 
+			    				fee_type: $this.fee_type, 
+			    				to_pay: $this.to_pay, 
+			    				or: $this.or_served, 
+			    				receipt: $this.receipt, 
+			    				date: $this.payment_date, 
+			    				ssi_id: $this.ssi_id,
+			    				acct_no: $this.acct_no,
+			    				course_type: $this.course_type,
+			    				course: $this.course,
+			    				current_status: $this.current_status,
+			    			},
+			    			function(data, textStatus, xhr) {
+				    			this.print_receipt(JSON.parse(data))
+				    		}.bind(this)
+				    	);
 					}
 				});
 		    },
@@ -502,45 +456,7 @@
 				// 	dangerMode: true,
 				// })
 				// .then((proceed) => {
-				//   	if (proceed) {
-				//     	var el = $(".payment_distribution");
-				//     	$this.final_payments = [];
-				//     	var dcr = parseFloat(this.distributed_cash_remaining);
-				//     	if( dcr > 0 || dcr < 0 ){
-				//     		dcr > 0 ? alert("Please expend remaining cash.") : alert("Insufficient funds."); 
-				//     	}
-				//     	else{
-				//     		$.each(el, function(index, val) {
-				//     			if($(val).val() > 0){
-				// 		    		$this.final_payments.push({
-				// 		    			'sy' : $(val).attr('data-sy'),
-				// 		    			'sem': $(val).attr('data-sem'),
-				// 		    			'value': $(val).val(),
-				// 		    			'type': $(val).attr('data-type'),
-				// 		    			'particular': $(val).attr('data-particular')
-				// 		    		});
-				//     			}
-				// 	    	});
-
-				// 	    	$.post('<?= base_url("home/submit_payment") ?>', 
-				//     			{
-				//     				payments: $this.final_payments, 
-				//     				fee_type: $this.fee_type, 
-				//     				to_pay: $this.to_pay, 
-				//     				or: $this.or_served, 
-				//     				receipt: $this.receipt, 
-				//     				date: $this.payment_date, 
-				//     				ssi_id: $this.ssi_id,
-				//     				acct_no: $this.acct_no,
-				//     				course_type: $this.course_type,
-				//     				course: $this.course,
-				//     				current_status: $this.current_status,
-				//     			},
-				//     			function(data, textStatus, xhr) {
-				// 	    			this.print_receipt(JSON.parse(data))
-				// 	    		}.bind(this)
-				// 	    	);
-				//     	}
+					//	save new Data Here
 				// 	}
 				// });
 		  //   },
