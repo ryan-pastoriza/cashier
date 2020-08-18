@@ -384,6 +384,14 @@
 						paid1: 0,   				
 						feeType: 'Other Fee'   			
 		    		};
+		    		var handling = {
+						particular: 'Handling Fee',
+						price2: 0,
+						paid2: 0,   
+						price1: 0,
+						paid1: 0,   				
+						feeType: 'Handling Fee'   			
+		    		};
 		    		var bills = [];
 		    		json.bills.forEach(function(item){
 						if( item.feeType.toLowerCase() == "miscellaneous" ){
@@ -397,7 +405,12 @@
 							other.paid2  = (item.paid2 ? parseFloat(item.paid2) : 0) + parseFloat(other.paid2);
 							other.price1 = parseFloat(item.price1) + parseFloat(other.price1);
 							other.paid1  = (item.paid1 ? parseFloat(item.paid1) : 0) + parseFloat(other.paid1);
-
+						}
+						else if( item.feeType.toLowerCase() == "handling fee" ){
+							handling.price2 = parseFloat(item.price2) + parseFloat(handling.price2);
+							handling.paid2  = (item.paid2 ? parseFloat(item.paid2) : 0) + parseFloat(handling.paid2);
+							handling.price1 = parseFloat(item.price1) + parseFloat(handling.price1);
+							handling.paid1  = (item.paid1 ? parseFloat(item.paid1) : 0) + parseFloat(handling.paid1);
 						}
 						else{
 							bills.push(item);
@@ -405,6 +418,7 @@
 					});
 		    		bills.push(misc);
 		    		bills.push(other);
+		    		bills.push(handling);
 		    		$this.summary_details_bills = bills.reverse();
 		    		$this.summary_details_payments = json.payments;
 		    	});
