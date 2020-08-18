@@ -376,6 +376,14 @@
 						paid1: 0,   				
 						feeType: 'Miscellaneous'   			
 		    		};
+		    		var other = {
+						particular: 'Other Fee',
+						price2: 0,
+						paid2: 0,   
+						price1: 0,
+						paid1: 0,   				
+						feeType: 'Other Fee'   			
+		    		};
 		    		var bills = [];
 		    		json.bills.forEach(function(item){
 						if( item.feeType.toLowerCase() == "miscellaneous" ){
@@ -384,11 +392,19 @@
 							misc.price1 = parseFloat(item.price1) + parseFloat(misc.price1);
 							misc.paid1  = (item.paid1 ? parseFloat(item.paid1) : 0) + parseFloat(misc.paid1);
 						}
+						else if( item.feeType.toLowerCase() == "other fee" ){
+							other.price2 = parseFloat(item.price2) + parseFloat(other.price2);
+							other.paid2  = (item.paid2 ? parseFloat(item.paid2) : 0) + parseFloat(other.paid2);
+							other.price1 = parseFloat(item.price1) + parseFloat(other.price1);
+							other.paid1  = (item.paid1 ? parseFloat(item.paid1) : 0) + parseFloat(other.paid1);
+
+						}
 						else{
 							bills.push(item);
 						}	
 					});
 		    		bills.push(misc);
+		    		bills.push(other);
 		    		$this.summary_details_bills = bills.reverse();
 		    		$this.summary_details_payments = json.payments;
 		    	});
