@@ -103,13 +103,13 @@
 			ops_particular: [], // other payment search paid particular,,
 			old_system_distribution: {},
 			edit_or: '',
+			edit_or_copy: '',
 			edit_receipt: '',
 			edit_total: '0',
+			edit_total_before_edit: '0',
 			edit_date: '',
-			edit_total_details: '',
 			edit_amount: [],
-			edit_particular: [],
-			all_edit_details: []
+			edit_particular: []
 		},
 		created: function () {
 			this.current_or_served();
@@ -433,11 +433,13 @@
 		    },
 		    edit_detail_modal: function(or){
 		    	this.edit_or = or;
-		    	// this.edit_total_details = or;
+		    	this.edit_or_copy = or;
 		    	var pType,totalPaid,payDate,Data;
 		    	$.getJSON('<?= base_url("home/getEditData")?>',{or:this.current_or},function(data){
+		    		console.log(data);
 		    		this.edit_receipt = data[0].printingType;
 		    		this.edit_total = data[0].total_paid;
+		    		this.edit_total_before_edit = data[0].total_paid;
 		    		this.edit_total_details = data[0].total_paid;
 		    		this.edit_date = data[0].paymentDate;
 		    		this.all_edit_details = data;
@@ -456,40 +458,20 @@
 				})
 				.then((proceed) => {
 				  	if (proceed) {
-				    	$.post('<?= base_url("home/submit_payment") ?>', 
-			    			{
-			    				payments: $this.final_payments, 
-			    				fee_type: $this.fee_type, 
-			    				to_pay: $this.to_pay, 
-			    				or: $this.or_served, 
-			    				receipt: $this.receipt, 
-			    				date: $this.payment_date, 
-			    				ssi_id: $this.ssi_id,
-			    				acct_no: $this.acct_no,
-			    				course_type: $this.course_type,
-			    				course: $this.course,
-			    				current_status: $this.current_status,
+				    	$.post('<?= base_url("home/submit_payment") ?>', {
+				    			receipt: $this.edit_receipt,
+				    			or: $this.edit_or,
+				    			or_copy: $this.edit_or_copy,
+				    			total: $this.edit_total,
+				    			total_before:$this.edit_total_before_edit,
 			    			},
 			    			function(data, textStatus, xhr) {
-				    			this.print_receipt(JSON.parse(data))
+				    			// this.print_receipt(JSON.parse(data))
 				    		}.bind(this)
 				    	);
 					}
 				});
 		    },
-		  //   edit_payment_details: function(){
-		  //   	var $this = this;
-		  //   	swal({
-				// 	title: "Are you sure?",
-				// 	icon: "warning",
-				// 	buttons: true,
-				// 	dangerMode: true,
-				// })
-				// .then((proceed) => {
-					//	save new Data Here
-				// 	}
-				// });
-		  //   },
 		    cancel_payment: function(action){
 		    	$this = this;
 		    	$.post('<?= base_url("home/cancel_payment") ?>', {or: this.current_or, action: action, paymentId: this.current_or_id }, function(data, textStatus, xhr) {

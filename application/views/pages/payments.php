@@ -381,31 +381,31 @@
 						<input type="date" class="form-control input-sm" id="edit_date" v-model="edit_date">
 					</div>
 					<div class="form-group mb5">
-						<input type="text" class="form-control input-sm" id="edit_total" v-model.lazy="edit_total">
+						<input type="text" class="form-control input-sm" id="edit_total" v-model="edit_total">
 					</div>
 					<div class="form-group mb5">
 						<button type="button" class="btn btn-lg btn-primary form-control" v-if="has_selected" style="min-height: 70px; font-size: 20px;" v-on:click="edit_payment()" v-if="ses_role != 'cashier'">EDIT OR DETAILS</button>
 					</div>
+<!-- 
 					<hr>
 					<h2>Payment Details</h2>
-
 					<table class="table table-striped table-hover">
 						<thead>
 							<th>Particular</th>
 							<th>Paid Amount</th>
 						</thead>
 						<tbody>
-							<tr v-for="(aod, index) in all_or_details">
+							<tr v-for="(aod, index) in all_edit_details" @contextmenu="remove_payment_detail($event)">
 								<td>{{ aod.particular }}</td>
-								<td v-if="ses_role == 'cashier'">{{ aod.paid2 }}</td>
-								<td v-else>{{ aod.paid1 }}</td>
+								<td v-if="ses_role == 'cashier'">{{ aod.detail_paid_amount }}</td>
+								<td v-else>{{ aod.detail_paid_amount_oracle }}</td>
 							</tr>
 						</tbody>
 					</table>
 					<div class="form-group mb5">
 					  	<label for="edit_total_details">Total Amount</label>
-						<input type="text" class="form-control input-sm" disabled id="edit_total" v-model="edit_total">
-					</div>
+						<input type="text" class="form-control input-sm" disabled id="edit_total_details" v-model="edit_total_details">
+					</div> -->
 <!-- 
 					<div v-for="(val, index) in all_edit_details" v-bind:key="val.paymentDetailsId">
 						<div class="form-group mb5">
@@ -484,7 +484,9 @@
 							<th>School year</th>
 							<th>Sem</th>
 							<th>Remaining Balance</th>
+							<th>Type</th>
 							<th>Distribution</th>
+
 						</thead>
 						<tbody>
 							<tr v-for="(fp, key) in formatted_payments">

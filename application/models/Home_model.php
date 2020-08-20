@@ -1136,188 +1136,35 @@ class Home_model extends CI_Model
 		}
 	}
 	public function edit_payment($data){
-		$or = $data->post('or');
-		$payments = $data->post('payments');
-		$fee_type = $data->post('fee_type');
-		$to_pay   = $data->post('to_pay');
-		$receipt  = $data->post('receipt');
-		$date 	  = $data->post('date');
-		$ssi_id   = $data->post('ssi_id');		
-		$acct_no   = $data->post('acct_no');		
-		$course   = $data->post('course');
-		$current_status = $data->post('current_status');
-		$old_system_payments = [];
-		$paid_particulars = []; // all particulars to be paid needed for printing the official receipt
-
-		$payment_rows = array(
-		        'ssi_id' => $ssi_id,
-		        'orNo' => $or,
-		        'paymentDate' => $date,
-		        'amt1' => '',
-		        'amt2' => '',
-		        'paymentMode' => 'cash',
-		        'cashier' => $this->username,
-		        'semId' => null, // this field will be updated after inserting all applicable particulars in payment details. It will be updated with the first sy/sem ID of first bills 
-		        'syId' => null, // this field will be updated after inserting all applicable particulars in payment details. It will be updated with the first sy/sem ID of first bills
-		        'printingType' => $receipt,
-		);
-		$this->db->insert('payments', $payment_rows);
-		$payment_id = $this->db->insert_id();
-
-		$roll_back_items['payments'][] = $payment_id;
-
-		$unpaid_particulars = []; // particulars having remaining balance more than 0
-
-		$total_amt1 = 0; // to be filled after inserting all rows in paymentDetails
-		$total_amt2 = 0; // to be filled after inserting all rows in paymentDetails
-		$payment_syId = "";
-		$payment_semId = "";
-
-		foreach ($payments as $key => $value) {
-
-			$distribution_amount = floatval($value['value']);
-			$select = ' assessment.assessmentId,
-						assessment.ssi_id,
-						sy.sy,
-						sem.sem,
-						assessment.particular,
-						assessment.feeType,
-						assessment.amt1 as price1,
-						assessment.amt2 as price2,
-						assessment.syId,
-						assessment.semId,
-						SUM(IFNULL(pd.amt1, 0)) as paid1,
-						SUM(IFNULL(pd.amt2, 0)) as paid2,
-						CAST(assessment.amt1 AS DECIMAL(9, 2)) - CAST(IFNULL(SUM(pd.amt1),0) AS DECIMAL(9, 2)) as remaining_balance1,
-						CAST(assessment.amt2 AS DECIMAL(9, 2)) - CAST(IFNULL(SUM(pd.amt2),0) AS DECIMAL(9, 2)) as remaining_balance2';
-
-			$result = $this->db
-						->select($select)
-						->where('assessment.ssi_id', $ssi_id)
-						->where('(CAST(assessment.amt2 AS DECIMAL(9, 2)) - CAST(IFNULL(pd.amt2,0) AS DECIMAL(9, 2))) >' , 0)
-						->where('sy.sy', $value['sy'])
-						->where('sem.sem', $value['sem'])
-						->join('sy', 'sy.syId = assessment.syId')
-						->join('sem', 'sem.semId = assessment.semId')
-						->join('paymentdetails pd', 'pd.assessmentId = assessment.assessmentId', 'LEFT')
-						->group_by('assessment.assessmentId')
-						->order_by('assessment.feeType')
-						->get('assessment')->result();
-
-			try {
-				foreach ($result as $res_key => $res_value) {
-					$payment_syId = $res_value->syId;
-					$payment_semId = $res_value->semId;
-
-					if($distribution_amount > 0){
-						if( $distribution_amount >= $res_value->remaining_balance2 ){
-
-							$paymentdetail_rows = array(
-								'assessmentId' => $res_value->assessmentId,
-								'amt1' => $res_value->remaining_balance1,
-								'amt2' => $res_value->remaining_balance2,
-								'paymentId' => $payment_id,
-							);
-							$this->db->insert('paymentdetails', $paymentdetail_rows);
-							$total_amt1 += (double)$res_value->remaining_balance1;
-							$total_amt2 += (double)$res_value->remaining_balance2;
-
-							// item to be rolled back if ever
-							$pd_id = $this->db->insert_id(); 
-							$roll_back_items['paymentdetails'][] = $pd_id;
-
-							$distribution_amount -= floatval($res_value->remaining_balance2);
-							$particulars_tbp = [
-								'particular' => $res_value->particular,
-								'amount' => $res_value->remaining_balance2,
-								'amount_oracle' => number_format($res_value->remaining_balance1, 2),
-								'feeType' => $res_value->feeType
-							];
-							array_push($paid_particulars, $particulars_tbp);
-							continue;
-						}
-						if( $distribution_amount < $res_value->remaining_balance2 ){
-							// get percentage then amount for amount1
-							$percentage1 = ($distribution_amount / $res_value->price2);
-							$amt1_val   = $res_value->price1 * $percentage1;
-
-							$paymentdetail_rows = array(
-								'assessmentId' => $res_value->assessmentId,
-								'amt1' => $amt1_val,
-								'amt2' => $distribution_amount,
-								'paymentId' => $payment_id,
-							);
-
-							$this->db->insert('paymentdetails', $paymentdetail_rows);
-							$total_amt1 += (double)$amt1_val;
-							$total_amt2 += (double)$distribution_amount;
-
-							// item to be rolled back if ever
-							$pd_id = $this->db->insert_id(); 
-							$roll_back_items['paymentdetails'][] = $pd_id;
-
-							$particulars_tbp = [
-								'particular' => $res_value->particular,
-								'amount' => $distribution_amount,
-								'amount_oracle' => number_format($amt1_val, 2),
-								'feeType' => $res_value->feeType
-							];
-							array_push($paid_particulars, $particulars_tbp);
-							$distribution_amount = 0;
-							break;
-						}
-
-					}
-					else{
-						break;
-					}
-				}
-			} 
-			catch (Exception $e) {
-
-				foreach (array_reverse($roll_back_items) as $key => $value) {
-					$id = $key == 'payments' ? 'paymentId' : 'paymentDetailsId';
-					foreach ($value as $key1 => $value1) {
-						$this->db->where($id, $value1);
-						$this->db->delete($key);
-					}
-				}
-				break;
-				return false;	
-			}	
+		$or = $data->post('edit_or');
+		$date 	  = $data->post('edit_date');
+		$receipt  = $data->post('edit_receipt');
+		$total = $data->post('total');
+		$total_before = $data->post('total_before');
+		if($total == $total_before){
+			$new_amt1 = array(
+				'or' => $or,
+				'date' => $date,
+				'printingType' => $receipt,
+			);
+		}else{
+			$this->db->where()
+			$new_amt1 = array(
+				'or' => $or,
+				'date' => $date,
+				'printingType' => $receipt,
+		        'amt1'  => $total_amt1,
+		        'amt2'  => $total_amt2,
+			);
 		}
 
-		$new_amt1 = array(
-	        'amt1'  => $total_amt1,
-	        'amt2'  => $total_amt2,
-	        'syId'  => $payment_syId,
-			'semId' => $payment_semId
-		);
-
 		$this->db->where('paymentId', $payment_id);
-		$this->db->update('payments', $new_amt1);
+		return $this->db->update('payments', $new_amt1);
 
 		// update OR
-		$this->receipt_served($or, $receipt);
+		// $this->receipt_served($or, $receipt);
 
-		// return $paid_particulars;
-		//Use Reprint Code cause some particulars cant be found in reciept
-		$selectss = [
-
-					'assessment.particular AS particular',
-					'paymentdetails.amt2 AS amount',
-					'paymentdetails.amt1 AS amount_oracle',
-					'assessment.feeType AS feeType'
-				];
-
-		$datass = $this->db
-					->select($selectss)
-					->join('paymentdetails', 'payments.paymentId = paymentdetails.paymentId')
-					->join('assessment', 'paymentdetails.assessmentId = assessment.assessmentId')
-					->where('payments.orNo', $or)
-					->get('payments');
-
-		return $datass->result();
+		// return $datass->result();
 	
 	}
 	public function regular_payment($data){
