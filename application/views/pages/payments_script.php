@@ -102,6 +102,7 @@
 			op_search: '',
 			ops_particular: [], // other payment search paid particular,,
 			old_system_distribution: {},
+			edit_id: '',
 			edit_or: '',
 			edit_or_copy: '',
 			edit_receipt: '',
@@ -437,6 +438,7 @@
 		    	var pType,totalPaid,payDate,Data;
 		    	$.getJSON('<?= base_url("home/getEditData")?>',{or:this.current_or},function(data){
 		    		console.log(data);
+		    		this.edit_id = data[0].paymentId;
 		    		this.edit_receipt = data[0].printingType;
 		    		this.edit_total = data[0].total_paid;
 		    		this.edit_total_before_edit = data[0].total_paid;
@@ -458,15 +460,26 @@
 				})
 				.then((proceed) => {
 				  	if (proceed) {
-				    	$.post('<?= base_url("home/submit_payment") ?>', {
-				    			receipt: $this.edit_receipt,
-				    			or: $this.edit_or,
-				    			or_copy: $this.edit_or_copy,
-				    			total: $this.edit_total,
-				    			total_before:$this.edit_total_before_edit,
+				    	$.post('<?= base_url("home/submit_payment_edit") ?>', {
+				    			id: this.edit_id,
+				    			receipt: this.edit_receipt,
+				    			date: this.edit_date,
+				    			or: this.edit_or,
+				    			or_copy: this.edit_or_copy,
+				    			total: this.edit_total,
+				    			total_before: this.edit_total_before_edit,
 			    			},
 			    			function(data, textStatus, xhr) {
 				    			// this.print_receipt(JSON.parse(data))
+				    			if (data) {
+			    					swal("Success!", "Edit Complete.", "success");
+				    			}else{
+				    				swal(
+				    					{title:'Failed to Edit, Please Ask for Developer Assistance',
+				    					icon:'danger',
+				    					dangerMode:true,
+				    				});
+				    			}
 				    		}.bind(this)
 				    	);
 					}

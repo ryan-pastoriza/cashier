@@ -154,6 +154,14 @@ class Home extends CI_Controller
 		echo json_encode($res);
 	}
 
+	public function submit_payment_edit(){
+		$home_model = $this->load->model('Home_model');
+		$data = $this->input;
+		$res = $this->Home_model->edit_payment($data);
+		// print_r( $data );
+		echo json_encode($res);
+	}
+
 	public function downpayment_bills(){
 		$home_model = $this->load->model('Home_model');
 		$db = $this->Home_model->downpayment_bills($_REQUEST);

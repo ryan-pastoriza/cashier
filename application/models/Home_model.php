@@ -1136,36 +1136,132 @@ class Home_model extends CI_Model
 		}
 	}
 	public function edit_payment($data){
-		$or = $data->post('edit_or');
-		$date 	  = $data->post('edit_date');
-		$receipt  = $data->post('edit_receipt');
+
+		$id = $data->post('id');
+		$or = $data->post('or');
+		$date 	  = $data->post('date');
+		$receipt  = $data->post('receipt');
 		$total = $data->post('total');
 		$total_before = $data->post('total_before');
+		// echo $id;
+		// echo "<-id";
+		$result = false;
 		if($total == $total_before){
 			$new_amt1 = array(
-				'or' => $or,
-				'date' => $date,
+				'orNo' => $or,
+				'paymentDate' => $date,
 				'printingType' => $receipt,
 			);
+			$this->db->where('paymentId', $id);
+			$result = $this->db->update('payments', $new_amt1);
 		}else{
-			$this->db->where()
-			$new_amt1 = array(
-				'or' => $or,
-				'date' => $date,
-				'printingType' => $receipt,
-		        'amt1'  => $total_amt1,
-		        'amt2'  => $total_amt2,
-			);
+			try{
+				$this->db->trans_start();
+
+				$this->db->where('paymentId',$id)
+				->delete('paymentdetails');
+				$total_amt1 = 0;
+				$total_amt2 = 0;
+				$distribution_amount = $total;
+				$select = ' assessment.assessmentId,
+							assessment.ssi_id,
+							assessment.particular,
+							assessment.feeType,
+							assessment.amt1 as price1,
+							assessment.amt2 as price2,
+							assessment.syId,
+							assessment.semId,
+							SUM(IFNULL(pd.amt1, 0)) as paid1,
+							SUM(IFNULL(pd.amt2, 0)) as paid2,
+							CAST(assessment.amt1 AS DECIMAL(9, 2)) - CAST(IFNULL(SUM(pd.amt1),0) AS DECIMAL(9, 2)) as remaining_balance1,
+							CAST(assessment.amt2 AS DECIMAL(9, 2)) - CAST(IFNULL(SUM(pd.amt2),0) AS DECIMAL(9, 2)) as remaining_balance2';
+
+				$result = $this->db
+							->select($select)
+							->where('(CAST(assessment.amt2 AS DECIMAL(9, 2)) - CAST(IFNULL(pd.amt2,0) AS DECIMAL(9, 2))) >' , 0)
+							->where('payments.paymentId',$id)
+							->join('paymentdetails pd', 'pd.assessmentId = assessment.assessmentId', 'LEFT')
+							->join('payments', 'payments.ssi_id = assessment.ssi_id')
+							->group_by('assessment.assessmentId')
+							->order_by('assessment.feeType', 'ASC')
+							->get('assessment')->result();
+
+					foreach ($result as $res_key => $res_value) {
+
+						if($distribution_amount > 0){
+							if( $distribution_amount >= $res_value->remaining_balance2 ){
+
+								$paymentdetail_rows = array(
+									'assessmentId' => $res_value->assessmentId,
+									'amt1' => $res_value->remaining_balance1,
+									'amt2' => $res_value->remaining_balance2,
+									'paymentId' => $id,
+								);
+								$this->db->insert('paymentdetails', $paymentdetail_rows);
+								$total_amt1 += (double)$res_value->remaining_balance1;
+								$total_amt2 += (double)$res_value->remaining_balance2;
+
+
+								$distribution_amount -= floatval($res_value->remaining_balance2);
+								$particulars_tbp = [
+									'particular' => $res_value->particular,
+									'amount' => $res_value->remaining_balance2,
+									'amount_oracle' => number_format($res_value->remaining_balance1, 2),
+									'feeType' => $res_value->feeType
+								];
+								// array_push($paid_particulars, $particulars_tbp);
+								continue;
+							}
+							if( $distribution_amount < $res_value->remaining_balance2 ){
+								// get percentage then amount for amount1
+								$percentage1 = ($distribution_amount / $res_value->price2);
+								$amt1_val   = $res_value->price1 * $percentage1;
+
+								$paymentdetail_rows = array(
+									'assessmentId' => $res_value->assessmentId,
+									'amt1' => $amt1_val,
+									'amt2' => $distribution_amount,
+									'paymentId' => $id,
+								);
+
+								$this->db->insert('paymentdetails', $paymentdetail_rows);
+								$total_amt1 += (double)$amt1_val;
+								$total_amt2 += (double)$distribution_amount;
+
+
+								$particulars_tbp = [
+									'particular' => $res_value->particular,
+									'amount' => $distribution_amount,
+									'amount_oracle' => number_format($amt1_val, 2),
+									'feeType' => $res_value->feeType
+								];
+								// array_push($paid_particulars, $particulars_tbp);
+								$distribution_amount = 0;
+								break;
+							}
+
+						}
+						else{
+							break;
+						}
+					}
+
+				// return $this->db->get('paymentdetails');
+				$new_amt1 = array(
+					'orNo' => $or,
+					'paymentDate' => $date,
+					'printingType' => $receipt,
+					'amt1'  => $total_amt1,
+					'amt2'  => $total_amt2,
+				);
+				$this->db->where('paymentId', $id);
+				$this->db->update('payments', $new_amt1);
+				$result = $this->db->trans_complete();
+			}catch(Exception $e){
+				return $e;
+			}
 		}
-
-		$this->db->where('paymentId', $payment_id);
-		return $this->db->update('payments', $new_amt1);
-
-		// update OR
-		// $this->receipt_served($or, $receipt);
-
-		// return $datass->result();
-	
+		return $result;
 	}
 	public function regular_payment($data){
 
