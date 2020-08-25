@@ -484,7 +484,6 @@
 							<th>School year</th>
 							<th>Sem</th>
 							<th>Remaining Balance</th>
-							<th>Type</th>
 							<th>Distribution</th>
 
 						</thead>
