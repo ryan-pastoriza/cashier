@@ -1083,7 +1083,7 @@ class Home_model extends CI_Model
 				'price2' => '',
 				'paid2' => ''
 			];
-			array_unshift($bridging_bills, $bridging_row);
+			array_push($bridging_bills, $bridging_row);
 		}
 		
 		$final_bills = array_merge($non_bridging_bills, $bridging_bills);

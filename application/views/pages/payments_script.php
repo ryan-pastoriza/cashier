@@ -395,19 +395,20 @@
 		    		};
 		    		var bills = [];
 		    		json.bills.forEach(function(item){
-						if( item.feeType.toLowerCase() == "miscellaneous" ){
+
+						if( item.feeType && item.feeType.toLowerCase() == "miscellaneous" ){
 							misc.price2 = parseFloat(item.price2) + parseFloat(misc.price2);
 							misc.paid2  = (item.paid2 ? parseFloat(item.paid2) : 0) + parseFloat(misc.paid2);
 							misc.price1 = parseFloat(item.price1) + parseFloat(misc.price1);
 							misc.paid1  = (item.paid1 ? parseFloat(item.paid1) : 0) + parseFloat(misc.paid1);
 						}
-						else if( item.feeType.toLowerCase() == "other fee" ){
+						else if( item.feeType && item.feeType.toLowerCase() == "other fee" ){
 							other.price2 = parseFloat(item.price2) + parseFloat(other.price2);
 							other.paid2  = (item.paid2 ? parseFloat(item.paid2) : 0) + parseFloat(other.paid2);
 							other.price1 = parseFloat(item.price1) + parseFloat(other.price1);
 							other.paid1  = (item.paid1 ? parseFloat(item.paid1) : 0) + parseFloat(other.paid1);
 						}
-						else if( item.feeType.toLowerCase() == "handling fee" ){
+						else if( item.feeType && item.feeType.toLowerCase() == "handling fee" ){
 							handling.price2 = parseFloat(item.price2) + parseFloat(handling.price2);
 							handling.paid2  = (item.paid2 ? parseFloat(item.paid2) : 0) + parseFloat(handling.paid2);
 							handling.price1 = parseFloat(item.price1) + parseFloat(handling.price1);
