@@ -1358,6 +1358,7 @@ class Home_model extends CI_Model
 						->where('(CAST(assessment.amt2 AS DECIMAL(9, 2)) - CAST(IFNULL(pd.amt2,0) AS DECIMAL(9, 2))) >' , 0)
 						->where('sy.sy', $value['sy'])
 						->where('sem.sem', $value['sem'])
+						->where('assessment.feeType', " NOT IN ['Tutorial','Bridging']")
 						->join('sy', 'sy.syId = assessment.syId')
 						->join('sem', 'sem.semId = assessment.semId')
 						->join('paymentdetails pd', 'pd.assessmentId = assessment.assessmentId', 'LEFT')
