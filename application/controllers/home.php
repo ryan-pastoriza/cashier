@@ -30,7 +30,8 @@ class Home extends CI_Controller
 		$home_model = $this->load->model('Home_model');
 		$stud_list  = $this->Home_model->student_list($term);
 		$other_payee = $this->Home_model->other_payees($term);
-
+		// print_r($stud_list);
+		// print_r($other_payee);
 		foreach ($stud_list as $key => $value) {
 
 			$fullname = ucwords($value->lname . ", " . $value->fname);
