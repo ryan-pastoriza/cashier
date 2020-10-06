@@ -67,7 +67,7 @@
 		$("#amt").html(total.toFixed(2))
 		$("#date").html(window.date)
 		// var amt_words = (numberToWords(window.amount)).toUpperCase() + "PESOS ONLY"
-		var amt_words = (numberToWords(total)).toUpperCase() + "PESOS ONLY"
+		var amt_words = (numberToWords(parseFloat(total.toFixed(2)))).toUpperCase() + "PESOS ONLY"
 		$("#amt_words").html(amt_words)
 		window.print();
 	});

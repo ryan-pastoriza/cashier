@@ -530,7 +530,6 @@ class Home_model extends CI_Model
 			}
 		}
 		return $paid_particulars;
-
 	}
 
 	public function old_system_pay_tutorial($acct_no, $data, $payment_id){
@@ -791,7 +790,7 @@ class Home_model extends CI_Model
 					SUM(pd.amt1) AS paid1,
 					SUM(pd.amt2) AS paid2';
 
-		$where = array('assessment.ssi_id' => $ssi_id);
+		$where = array('assessment.ssi_id' => $ssi_id,'assessment.feeType NOT IN ("Tutorial","Bridging")');
 
 		$result = $this->db
 					->where($where)
@@ -827,14 +826,14 @@ class Home_model extends CI_Model
 			$paid1 = 0.00;
 			$paid2 = 0.00;
 			foreach ($value as $key1 => $value1) {
-				$sy = $value1->sy;
-				$sem = $value1->sem;
-				$assessment1 += floatval($value1->price1); 
-				$assessment2 += floatval($value1->price2); 
-				$discount     = floatval($value1->discount);
-				$discount2     = floatval($value1->discount2);
-				$paid1 		 += floatval($value1->paid1);
-				$paid2 		 += floatval($value1->paid2);
+				$sy 			= 	$value1->sy;
+				$sem 			=	$value1->sem;
+				$assessment1 	+= 	floatval($value1->price1); 
+				$assessment2 	+= 	floatval($value1->price2); 
+				$discount     	= 	floatval($value1->discount);
+				$discount2    	= 	floatval($value1->discount2);
+				$paid1 		 	+= 	floatval($value1->paid1);
+				$paid2 		 	+= 	floatval($value1->paid2);
 			}
 
 			$array[] = [
@@ -842,8 +841,8 @@ class Home_model extends CI_Model
 				'sem' => $sem,
 				'total_1' => $assessment1,
 				'total_2' => $assessment2,
-				'total_1_discounted' => $assessment1 - $discount,
-				'total_2_discounted' => $assessment2 - $discount2,
+				'total_1_discounted' => $assessment1 - $discount, // minus tutorial and bridging
+				'total_2_discounted' => $assessment2 - $discount2,// minus tutorial and bridging
 				'discount' => $discount,
 				'discount2' => $discount2,
 				'paid1' => $paid1,
@@ -869,6 +868,12 @@ class Home_model extends CI_Model
 		else{
 			$where = array('payments.otherPayeeId' => $payee_id);
 		}
+		// if($payee_type == 'student'){
+		// 	$where = array('payments.ssi_id' => $payee_id, 'particulars.syId'=>$this->semId, 'particulars.semId'=>$this->syId);
+		// }
+		// else{
+		// 	$where = array('payments.otherPayeeId' => $payee_id, 'particulars.syId'=>$this->semId, 'particulars.semId'=>$this->syId);
+		// }
 		$result = $this->db
 					->where($where)
 					->select($select)
@@ -1135,6 +1140,7 @@ class Home_model extends CI_Model
 			return false;
 		}
 	}
+
 	public function edit_payment($data){
 
 		$id = $data->post('id');
@@ -1264,6 +1270,7 @@ class Home_model extends CI_Model
 		}
 		return $result;
 	}
+
 	public function regular_payment($data){
 
 		$or = $data->post('or');
@@ -1278,6 +1285,10 @@ class Home_model extends CI_Model
 		$current_status = $data->post('current_status');
 		$old_system_payments = [];
 		$paid_particulars = []; // all particulars to be paid needed for printing the official receipt
+		
+		if(count($this->db->where(['orNo'=>$or])->get('payments')->result())>0){
+			return 'or_used';
+		}
 
 		if( count( $this->db->where(['orNo'=>$or])->get('payments')->result() ) > 0 ){
 			return 'or_used';
@@ -1706,8 +1717,8 @@ class Home_model extends CI_Model
 		$select = [
 
 					'assessment.particular AS particular',
-					'paymentdetails.amt2 AS amount',
-					'paymentdetails.amt1 AS amount_oracle',
+					'SUM(paymentdetails.amt2) AS amount',
+					'SUM(paymentdetails.amt1) AS amount_oracle',
 					'assessment.feeType AS feeType'
 				];
 
@@ -1716,6 +1727,7 @@ class Home_model extends CI_Model
 					->join('paymentdetails', 'payments.paymentId = paymentdetails.paymentId')
 					->join('assessment', 'paymentdetails.assessmentId = assessment.assessmentId')
 					->where('payments.orNo', $orNo)
+					->group_by('feeType')
 					->get('payments');
 
 		return $data->result();
@@ -1746,7 +1758,6 @@ class Home_model extends CI_Model
 					->get('payments');
 
 		return $data->result();
-
 	}
 
 	public function test($acct_no = "05-2-01635", $sy = '2019-2020', $sem ='1st'){
@@ -1789,7 +1800,6 @@ class Home_model extends CI_Model
 		$a = $this->db_ama_summary("05-2-01635");
 		echo "<pre>";
 		print_r($a);
-	
 	}
 
 }

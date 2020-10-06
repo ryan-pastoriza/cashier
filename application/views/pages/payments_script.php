@@ -871,7 +871,7 @@
 				    				if(JSON.parse(data)=="or_used"){
 				    					swal("Ooops!", "The OR: " + $this.or_served + " is already used.", "error")
 				    				}else{
-					    				this.print_receipt(JSON.parse(data))
+				    					this.print_receipt(JSON.parse(data))	
 				    				}
 					    		}.bind(this)
 					    	);
@@ -1005,14 +1005,16 @@
 							misc_2.amount = parseFloat(misc_2.amount) + parseFloat(val.amount_oracle);
 						}
 						else{
-			    			particulars.push({
-			    				particular: val.particular,
-			    				amount: val.amount
-			    			});
-			    			particulars_2.push({
-			    				particular: val.particular,
-			    				amount: val.amount_oracle
-			    			});
+							if(val.amount > 0 || val.amount_oracle > 0){
+				    			particulars.push({
+				    				particular: val.feeType,
+				    				amount: val.amount
+				    			});
+				    			particulars_2.push({
+				    				particular: val.feeType,
+				    				amount: val.amount_oracle
+				    			});
+							}
 						}	
 		    		});
 		    	}
@@ -1046,17 +1048,17 @@
 		    			or.amt_words = this.numberToWords(this.to_pay)
 		    			or.date = this.payment_date;
 
-		    		if(this.fee_type == 'regular'){
-		    			console.log(this.fee_type);	
-				    	var or2 = window.open('<?= base_url('home/receipt'); ?>','or2','height=500,width=900,left=800,top=50,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no, status=yes');
-				    		or2.title = "For ORACLE";
-				    		or2.rows = particulars_2.reverse();
-			    			or2.name = this.name;
-			    			or2.address = address.toUpperCase();
-			    			or2.amount = this.to_pay;
-			    			or2.amt_words = this.numberToWords(this.to_pay)
-			    			or2.date = this.payment_date;
-		    		}
+		    		// if(this.fee_type == 'regular'){
+		    		// 	console.log(this.fee_type);	
+				    // 	var or2 = window.open('<?= base_url('home/receipt'); ?>','or2','height=500,width=900,left=800,top=50,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no, status=yes');
+				    // 		or2.title = "For ORACLE";
+				    // 		or2.rows = particulars_2.reverse();
+			    	// 		or2.name = this.name;
+			    	// 		or2.address = address.toUpperCase();
+			    	// 		or2.amount = this.to_pay;
+			    	// 		or2.amt_words = this.numberToWords(this.to_pay)
+			    	// 		or2.date = this.payment_date;
+		    		// }
 		    	}
 
 		    	else{
