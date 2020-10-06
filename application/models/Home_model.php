@@ -1713,8 +1713,8 @@ class Home_model extends CI_Model
 		$select = [
 
 					'assessment.particular AS particular',
-					'paymentdetails.amt2 AS amount',
-					'paymentdetails.amt1 AS amount_oracle',
+					'SUM(paymentdetails.amt2) AS amount',
+					'SUM(paymentdetails.amt1) AS amount_oracle',
 					'assessment.feeType AS feeType'
 				];
 
