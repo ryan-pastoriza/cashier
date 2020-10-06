@@ -1,11 +1,11 @@
 <?php
 
 /**
- * 
+ *
  */
 class Home_model extends CI_Model
 {
-	
+
 	public $sy;
 	public $sem;
 	public $syId;
@@ -16,7 +16,7 @@ class Home_model extends CI_Model
 	public function __construct(){
 		parent::__construct();
 		$this->load->database();
-		$this->load->library('session');	
+		$this->load->library('session');
 		$this->sy  = $this->session->userdata('user_data')['sy'];
 		$this->sem = $this->session->userdata('user_data')['sem'];
 		$this->user_id = $this->session->userdata('user_data')['user_data']->userId;
@@ -72,7 +72,7 @@ class Home_model extends CI_Model
 	}
 
 	public function other_payees($term){
-		
+
 
 		$query = $this->db
 					->select('*')
@@ -149,7 +149,7 @@ class Home_model extends CI_Model
 	}
 
 	public function course_year($ssi_id){
-		
+
 		$sis_db = $this->load->database('sis_db', TRUE);
 		$query  = $sis_db
 					->select('*')
@@ -174,7 +174,7 @@ class Home_model extends CI_Model
 				"regular_fees" => [],
 				"special_payments" => $this->special_payments($payee_type, $payee_id),
 				"old_system" => []
-			);	
+			);
 		}
 
 		return $array;
@@ -205,10 +205,10 @@ class Home_model extends CI_Model
 			$ret = [];
 			foreach ($payments as $key => $value) {
 				$payment_summary[$value->SY . " - " . $value->SEM] = $value;
-			}	
+			}
 			foreach ($assessment as $key => $value) {
-				
-				$discount = array_key_exists($value->sy . " - " . $value->sem, $discounts) ? $discounts[$value->sy . " - " . $value->sem] : 0;	
+
+				$discount = array_key_exists($value->sy . " - " . $value->sem, $discounts) ? $discounts[$value->sy . " - " . $value->sem] : 0;
 				$old_system_paid = array_key_exists($value->sy . " - " . $value->sem, $payment_summary) ? round($payment_summary[$value->sy . " - " . $value->sem]->total_paid, 2) : 0; // paid in old system
 
 				$remaining_old_assessment = round($value->fee_amt - $discount - $old_system_paid, 2); // old_assessment - discount - total paid in old system
@@ -271,9 +271,9 @@ class Home_model extends CI_Model
 					->where('tbl_stud_load.sem_load', $sem)
 					->where('tbl_stud_load.yearLoad', $sy)
 					->join('tbl_tutorial_subj', 'tbl_stud_load.Subject_code = tbl_tutorial_subj.Subject_code')
-					->join('tbl_schedule', 
-								'tbl_stud_load.Subject_code = tbl_schedule.Subject_code AND 
-								 tbl_stud_load.sem_load = tbl_schedule.sem_sched AND 
+					->join('tbl_schedule',
+								'tbl_stud_load.Subject_code = tbl_schedule.Subject_code AND
+								 tbl_stud_load.sem_load = tbl_schedule.sem_sched AND
 								 tbl_stud_load.yearLoad = tbl_schedule.year_sched')
 					->group_by(['tbl_stud_load.Subject_code', 'tbl_stud_load.yearLoad', 'tbl_stud_load.sem_load'])
 					->get('tbl_stud_load')
@@ -324,7 +324,7 @@ class Home_model extends CI_Model
 		$old_bal = $balance > 0 ? $balance : 0;
 		$new_bal = $new_sys_payments ? (int)$old_bal - (int)$new_sys_payments->total : $old_bal;
 
-		return [ 
+		return [
 			"old_balance" => $old_bal,
 			"new_balance" => $new_bal
 		];
@@ -333,7 +333,7 @@ class Home_model extends CI_Model
 	public function old_system_discount($acct_no){
 		$db_ama = $this->load->database('db_ama', true);
 		$total_discount = [];
-	
+
 		$discount = $db_ama
 						->select('sum(tbl_discount2.amt) AS discount, tbl_discount2.sem, tbl_discount2.sy')
 						->where('tbl_discount2.acctno', $acct_no)
@@ -369,22 +369,22 @@ class Home_model extends CI_Model
 
 		if($enrolled){
 			$query = "	SELECT
-							(Sum(tbl_schedule.Total_credit_unit)*(SELECT 
-							course.Unit 
-							From 
-							course 
-							Where 
-							course.sy = '{$sy}' AND 
-							course.sem = '{$sem}' AND 
-							course.course = '{$enrolled->course}' AND 
+							(Sum(tbl_schedule.Total_credit_unit)*(SELECT
+							course.Unit
+							From
+							course
+							Where
+							course.sy = '{$sy}' AND
+							course.sem = '{$sem}' AND
+							course.course = '{$enrolled->course}' AND
 							course.`status` = '{$enrolled->status}' LIMIT 1)) as total_bridging
 						FROM
 						tbl_stud_load
 						INNER JOIN tbl_bridging_subj ON tbl_stud_load.Subject_code = tbl_bridging_subj.Subject_code AND tbl_stud_load.sem_load = tbl_bridging_subj.sem AND tbl_stud_load.yearLoad = tbl_bridging_subj.sy
 						INNER JOIN tbl_schedule ON tbl_stud_load.Subject_code = tbl_schedule.Subject_code
-						Where 
-							tbl_stud_load.sem_load = '{$sem}' AND 
-							tbl_stud_load.yearLoad = '{$sy}' AND 
+						Where
+							tbl_stud_load.sem_load = '{$sem}' AND
+							tbl_stud_load.yearLoad = '{$sy}' AND
 							tbl_stud_load.acctno = '{$acct_no}'";
 			$bridging = $db_ama->query($query)->row();
 
@@ -418,7 +418,7 @@ class Home_model extends CI_Model
 
 	public function old_system_old_payments($acct_no, $sy, $sem){ // payments made in the old system
 		$db_ama = $this->load->database('db_ama', true);
-		
+
 		$payments = $db_ama->query("SELECT
 							payment.SY,
 							payment.SEM,
@@ -442,7 +442,7 @@ class Home_model extends CI_Model
 	}
 
 	public function old_system_payments($acct_no, $sy, $sem){ // payments made in the new system
-		
+
 		$sem_sy = $this->sy_sem_id($sy, $sem);
 
 		$payments = $this->db
@@ -490,7 +490,7 @@ class Home_model extends CI_Model
 	        'amt2' => $data['to_pay'],
 	        'paymentMode' => 'cash',
 	        'cashier' => $this->username,
-	        'semId' => $sy_sem_id['sem'], // this field will be updated after inserting all applicable particulars in payment details. It will be updated with the first sy/sem ID of first bills 
+	        'semId' => $sy_sem_id['sem'], // this field will be updated after inserting all applicable particulars in payment details. It will be updated with the first sy/sem ID of first bills
 	        'syId' => $sy_sem_id['sy'], // this field will be updated after inserting all applicable particulars in payment details. It will be updated with the first sy/sem ID of first bills
 	        'printingType' => $data['printingType'],
 		);
@@ -564,7 +564,7 @@ class Home_model extends CI_Model
 						'amount_oracle' => $data['value'],
 						'feeType' => 'OLD SYSTEM'
 				];
-				return $paid_particulars;	
+				return $paid_particulars;
 			}
 		}
 		return false;
@@ -586,7 +586,7 @@ class Home_model extends CI_Model
 		$discounts = $this->old_system_discount($acct_no);
 
 		$tp = $total_paid ? $total_paid->total_paid : 0; // total paid amount in old system
-		$dc = array_key_exists($data['sy'] . " - " . $data['sem'], $discounts) ? $discounts[$value->sy . " - " . $value->sem] : 0;	
+		$dc = array_key_exists($data['sy'] . " - " . $data['sem'], $discounts) ? $discounts[$value->sy . " - " . $value->sem] : 0;
 		$tp_dc = (int)$tp + (int)$dc; // old system total payments + discount;
 
 		// retrieve old assessment
@@ -634,7 +634,7 @@ class Home_model extends CI_Model
 								->get('paymentdetails')
 								->row();
 			$paid_amt = $paid_particular ? $paid_particular->paid_amt : 0;
-			
+
 			$value->remaining_balance = (int)$value->fee_amt - (int)$paid_amt;
 
 			if($value->remaining_balance > 0){
@@ -721,12 +721,12 @@ class Home_model extends CI_Model
 					LEFT JOIN oa_payment
 					ON oa_payment.oa_payment_id = oa_payment_distribution.oa_payment_id
 
-					WHERE 
+					WHERE
 					oa_student.ssi_id = '{$ssi_id}'
 
 					GROUP BY aoAmountId
 
-					ORDER by 
+					ORDER by
 					oa_particular_amount.oaSy,
 					oa_particular_amount.oaSem";
 
@@ -828,8 +828,8 @@ class Home_model extends CI_Model
 			foreach ($value as $key1 => $value1) {
 				$sy 			= 	$value1->sy;
 				$sem 			=	$value1->sem;
-				$assessment1 	+= 	floatval($value1->price1); 
-				$assessment2 	+= 	floatval($value1->price2); 
+				$assessment1 	+= 	floatval($value1->price1);
+				$assessment2 	+= 	floatval($value1->price2);
 				$discount     	= 	floatval($value1->discount);
 				$discount2    	= 	floatval($value1->discount2);
 				$paid1 		 	+= 	floatval($value1->paid1);
@@ -952,7 +952,7 @@ class Home_model extends CI_Model
 							break;
 
 						case 'midterm':
-							
+
 							$ret['prelim'] = 0;
 
 							$ret['midterm'] = ($row_total * .65);
@@ -991,14 +991,14 @@ class Home_model extends CI_Model
 					$ret['final'] = "";
 					$ret['total'] = (double)$row_total;
 				}
-			}	
+			}
 		}
 
 		return $ret;
 	}
 
 	public function payment_schedule_percentage($type, $ssi_id){
-		
+
 		$query = "	SELECT
 						fee_schedule.*, a.feeScheduleId, a.packageType,
 						fee_schedule_type.feeScheduleType
@@ -1017,8 +1017,8 @@ class Home_model extends CI_Model
 							INNER JOIN fee_package ON fee.packageId = fee_package.packageId
 							LEFT JOIN payment_distribution ON payment_distribution.studentBillId = student_bill.studentBillId
 							WHERE
-								student_bill.ssi_id = '{$ssi_id}' AND 
-								student_bill.billType = '{$type}' AND 
+								student_bill.ssi_id = '{$ssi_id}' AND
+								student_bill.billType = '{$type}' AND
 								fee_package.packageType = '{$type}'
 						) AS a
 					WHERE
@@ -1090,7 +1090,7 @@ class Home_model extends CI_Model
 			];
 			array_push($bridging_bills, $bridging_row);
 		}
-		
+
 		$final_bills = array_merge($non_bridging_bills, $bridging_bills);
 
 		$a = [
@@ -1104,7 +1104,7 @@ class Home_model extends CI_Model
 
 		$selections = 'student_bill.ssi_id, student_bill.studentBillId, payment_distribution.paymentId, payment.paymentDate, payment.paymentOrNum, payment.paymentAmount, payment.paymentType, payment.printingType, fee_package.sem, fee_package.sy';
 		$where = array('student_bill.ssi_id' => $ssi_id, 'fee_package.sy' => $sy, 'fee_package.sem' => $sem, 'student_bill.billType' => $type);
-		
+
 		$result = $this->db
 					->select($selections)
 					->where($where)
@@ -1116,7 +1116,7 @@ class Home_model extends CI_Model
 					->group_by('paymentOrNum')
 					->get('student_bill')
 					->result();
-					
+
 		return $result;
 	}
 
@@ -1279,13 +1279,13 @@ class Home_model extends CI_Model
 		$to_pay   = $data->post('to_pay');
 		$receipt  = $data->post('receipt');
 		$date 	  = $data->post('date');
-		$ssi_id   = $data->post('ssi_id');		
-		$acct_no   = $data->post('acct_no');		
+		$ssi_id   = $data->post('ssi_id');
+		$acct_no   = $data->post('acct_no');
 		$course   = $data->post('course');
 		$current_status = $data->post('current_status');
 		$old_system_payments = [];
 		$paid_particulars = []; // all particulars to be paid needed for printing the official receipt
-		
+
 		if(count($this->db->where(['orNo'=>$or])->get('payments')->result())>0){
 			return 'or_used';
 		}
@@ -1334,7 +1334,7 @@ class Home_model extends CI_Model
 		        'amt2' => '',
 		        'paymentMode' => 'cash',
 		        'cashier' => $this->username,
-		        'semId' => null, // this field will be updated after inserting all applicable particulars in payment details. It will be updated with the first sy/sem ID of first bills 
+		        'semId' => null, // this field will be updated after inserting all applicable particulars in payment details. It will be updated with the first sy/sem ID of first bills
 		        'syId' => null, // this field will be updated after inserting all applicable particulars in payment details. It will be updated with the first sy/sem ID of first bills
 		        'printingType' => $receipt,
 		);
@@ -1374,7 +1374,7 @@ class Home_model extends CI_Model
 						->where('(CAST(assessment.amt2 AS DECIMAL(9, 2)) - CAST(IFNULL(pd.amt2,0) AS DECIMAL(9, 2))) >' , 0)
 						->where('sy.sy', $value['sy'])
 						->where('sem.sem', $value['sem'])
-						->where('assessment.feeType NOT IN ("Tutorial","Bridging")')
+						// ->where('assessment.feeType NOT IN ("Tutorial","Bridging")')
 						->join('sy', 'sy.syId = assessment.syId')
 						->join('sem', 'sem.semId = assessment.semId')
 						->join('paymentdetails pd', 'pd.assessmentId = assessment.assessmentId', 'LEFT')
@@ -1401,7 +1401,7 @@ class Home_model extends CI_Model
 							$total_amt2 += (double)$res_value->remaining_balance2;
 
 							// item to be rolled back if ever
-							$pd_id = $this->db->insert_id(); 
+							$pd_id = $this->db->insert_id();
 							$roll_back_items['paymentdetails'][] = $pd_id;
 
 							$distribution_amount -= floatval($res_value->remaining_balance2);
@@ -1431,7 +1431,7 @@ class Home_model extends CI_Model
 							$total_amt2 += (double)$distribution_amount;
 
 							// item to be rolled back if ever
-							$pd_id = $this->db->insert_id(); 
+							$pd_id = $this->db->insert_id();
 							$roll_back_items['paymentdetails'][] = $pd_id;
 
 							$particulars_tbp = [
@@ -1450,7 +1450,7 @@ class Home_model extends CI_Model
 						break;
 					}
 				}
-			} 
+			}
 			catch (Exception $e) {
 
 				foreach (array_reverse($roll_back_items) as $key => $value) {
@@ -1461,8 +1461,8 @@ class Home_model extends CI_Model
 					}
 				}
 				break;
-				return false;	
-			}	
+				return false;
+			}
 		}
 
 		$new_amt1 = array(
@@ -1585,7 +1585,7 @@ class Home_model extends CI_Model
 				'amt2' => $value['subtotal'],
 				'paymentId' => $payment_id
 			];
-			$this->db->insert('paymentdetails', $a);	
+			$this->db->insert('paymentdetails', $a);
 		}
 		// update OR
 		$this->receipt_served($or, $receipt);
@@ -1603,7 +1603,7 @@ class Home_model extends CI_Model
 					->get('particulars')
 					->row();
 		$course_type = $ct_qry ? $ct_qry->courseType : null;
-		
+
 		$year = $sis_db
 					->where('ssi_id', $data['ssi_id'])
 					->where('sch_year', $this->sy)
@@ -1662,7 +1662,7 @@ class Home_model extends CI_Model
 			'sem' => $semId[0]->semId ? $semId[0]->semId : ''
 		];
 		return $a;
-	}	
+	}
 
 	public function or_serving($receipt = ''){
 
@@ -1681,7 +1681,7 @@ class Home_model extends CI_Model
 			$or_serving = '';
 		}
 
-		return $or_serving;	
+		return $or_serving;
 	}
 
 	public function receipt_served($or, $receipt){
@@ -1794,7 +1794,7 @@ class Home_model extends CI_Model
 		);
 		$a = $this->old_system_pay($acct_no, $old_system_payments, $data);
 	}
-	
+
 	public function testt($spi_id = '9304'){
 
 		$a = $this->db_ama_summary("05-2-01635");
