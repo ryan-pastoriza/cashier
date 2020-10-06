@@ -300,8 +300,8 @@
 						<tbody>
 							<tr v-for="(sdp, index) in summary_details_payments" class="payment_row" v-on:click="or_detail_modal(index)" @contextmenu="get_receipt_for_print($event)" v-bind:data-key="index">
 								<td>{{index}}</td>
-								<td v-if="ses_role == 'cashier'">{{formatPrice(sdp.amount_oracle)}}</td>
-								<td v-else>{{formatPrice(sdp.amount)}}</td>
+								<td v-if="ses_role == 'cashier'">{{formatPrice(sdp.amount)}}</td>
+								<td v-else>{{formatPrice(sdp.amount_oracle)}}</td>
 								<td>{{sdp.printing_type}}</td>
 								<td>{{sdp.payment_date}}</td>
 								<td>{{sdp.payment_status}}</td>

@@ -868,7 +868,11 @@
 				    				current_status: $this.current_status,
 				    			},
 				    			function(data, textStatus, xhr) {
-					    			this.print_receipt(JSON.parse(data))
+				    				if(JSON.parse(data)=="or_used"){
+				    					swal("Ooops!", "The OR: " + $this.or_served + " is already used.", "error")
+				    				}else{
+					    				this.print_receipt(JSON.parse(data))
+				    				}
 					    		}.bind(this)
 					    	);
 				    	}

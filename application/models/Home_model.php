@@ -1253,7 +1253,7 @@ class Home_model extends CI_Model
 					'paymentDate' => $date,
 					'printingType' => $receipt,
 					'amt1'  => $total_amt1,
-					'amt2'  => $total_amt2,
+					'amt2'  => $total,
 				);
 				$this->db->where('paymentId', $id);
 				$this->db->update('payments', $new_amt1);
@@ -1278,6 +1278,10 @@ class Home_model extends CI_Model
 		$current_status = $data->post('current_status');
 		$old_system_payments = [];
 		$paid_particulars = []; // all particulars to be paid needed for printing the official receipt
+
+		if( count( $this->db->where(['orNo'=>$or])->get('payments')->result() ) > 0 ){
+			return 'or_used';
+		}
 
 		// CHECK IF PAYMENT INCLUDES DOWNPAYMENT
 		foreach ($payments as $key => $value) {
@@ -1452,7 +1456,7 @@ class Home_model extends CI_Model
 
 		$new_amt1 = array(
 	        'amt1'  => $total_amt1,
-	        'amt2'  => $total_amt2,
+	        'amt2'  => $to_pay,
 	        'syId'  => $payment_syId,
 			'semId' => $payment_semId
 		);
