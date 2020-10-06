@@ -1005,14 +1005,16 @@
 							misc_2.amount = parseFloat(misc_2.amount) + parseFloat(val.amount_oracle);
 						}
 						else{
-			    			particulars.push({
-			    				particular: val.particular,
-			    				amount: val.amount
-			    			});
-			    			particulars_2.push({
-			    				particular: val.particular,
-			    				amount: val.amount_oracle
-			    			});
+							if(val.amount > 0 || val.amount_oracle > 0){
+				    			particulars.push({
+				    				particular: val.feeType,
+				    				amount: val.amount
+				    			});
+				    			particulars_2.push({
+				    				particular: val.feeType,
+				    				amount: val.amount_oracle
+				    			});
+							}
 						}	
 		    		});
 		    	}

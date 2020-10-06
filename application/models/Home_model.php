@@ -1723,6 +1723,7 @@ class Home_model extends CI_Model
 					->join('paymentdetails', 'payments.paymentId = paymentdetails.paymentId')
 					->join('assessment', 'paymentdetails.assessmentId = assessment.assessmentId')
 					->where('payments.orNo', $orNo)
+					->group_by('feeType')
 					->get('payments');
 
 		return $data->result();
