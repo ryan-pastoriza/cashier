@@ -1379,7 +1379,7 @@ class Home_model extends CI_Model
 						->join('sem', 'sem.semId = assessment.semId')
 						->join('paymentdetails pd', 'pd.assessmentId = assessment.assessmentId', 'LEFT')
 						->group_by('assessment.assessmentId')
-						->order_by('assessment.priority')
+						->order_by('assessment.priority', 'ASC')
 						->get('assessment')->result();
 
 			try {
