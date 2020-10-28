@@ -1190,7 +1190,7 @@ class Home_model extends CI_Model
 							->join('paymentdetails pd', 'pd.assessmentId = assessment.assessmentId', 'LEFT')
 							->join('payments', 'payments.ssi_id = assessment.ssi_id')
 							->group_by('assessment.assessmentId')
-							->order_by('assessment.feeType', 'ASC')
+							->order_by('assessment.priority', 'ASC')
 							->get('assessment')->result();
 
 					foreach ($result as $res_key => $res_value) {
