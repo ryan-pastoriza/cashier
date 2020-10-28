@@ -790,7 +790,7 @@ class Home_model extends CI_Model
 					SUM(pd.amt1) AS paid1,
 					SUM(pd.amt2) AS paid2';
 
-		$where = array('assessment.ssi_id' => $ssi_id,'assessment.feeType NOT IN ("Tutorial","Bridging")');
+		$where = array('assessment.ssi_id' => $ssi_id);
 
 		$result = $this->db
 					->where($where)
@@ -1379,7 +1379,7 @@ class Home_model extends CI_Model
 						->join('sem', 'sem.semId = assessment.semId')
 						->join('paymentdetails pd', 'pd.assessmentId = assessment.assessmentId', 'LEFT')
 						->group_by('assessment.assessmentId')
-						->order_by('assessment.feeType')
+						->order_by('assessment.priority')
 						->get('assessment')->result();
 
 			try {
@@ -1524,6 +1524,7 @@ class Home_model extends CI_Model
 				->where('feeType', 'Miscellaneous')
 				->where('courseType', $course_type)
 				->where('studentStatus', ($year->current_stat=='New' ? 'New':'Old'))
+				->order_by('priority')
 				->get('particulars')->result();
 
 			if($particulars){
@@ -1535,7 +1536,9 @@ class Home_model extends CI_Model
 				        'amt2' => $value->amt2,
 				        'feeType' => 'Miscellaneous',
 				        'semId' => $this->semId,
-				        'syId' => $this->syId
+				        'syId' => $this->syId,
+				        'collectionReportGroup' => $value->collectionReportGroup,
+				        'priority' => $value->priority
 					);
 					$this->db->insert('assessment', $assessment_rows);
 				}
