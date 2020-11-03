@@ -1036,14 +1036,17 @@
 			    	var amt = '';
 			    	var amt_words = "";
 			    	var or  = window.open('<?= base_url('home/receipt'); ?>','or','height=500,width=900,left=50,top=50,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no, status=yes');
-	    			var street = this.address.street ? this.address.street : '';
-	    			var brgy   = this.address.brgy_name ? this.address.brgy_name : '';
-	    			var city   = this.address.city_name ? this.address.city_name : '';
-	    			var address =  street + " " + brgy + ", " + city;
+			    	var address = "";
+			    	if(this.address != null){
+		    			var street = this.address.street ? this.address.street : '';
+		    			var brgy   = this.address.brgy_name ? this.address.brgy_name : '';
+		    			var city   = this.address.city_name ? this.address.city_name : '';
+		    			address =  street + " " + brgy + ", " + city;
+			    	}
 	    				or.title = 'Adjusted';
 			    		or.rows = particulars.reverse();
 		    			or.name = this.name;
-		    			or.address = address.toUpperCase();
+		    			or.address = address ? address.toUpperCase() : '';
 		    			or.amount = this.to_pay;
 		    			or.amt_words = this.numberToWords(this.to_pay)
 		    			or.date = this.payment_date;
